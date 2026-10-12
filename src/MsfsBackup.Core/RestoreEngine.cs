@@ -231,6 +231,13 @@ public sealed class RestoreEngine
     void RestoreLink(Job job, LinkRecord link, ConflictMode mode, RestoreResult result)
     {
         string linkPath = Path.Combine(job.TargetRoot, link.RelativePath);
+        if (AddonsLinker.Owns(link))
+        {
+            // Older backups may include these. Addons Linker recreates them itself.
+            result.LinksSkipped++;
+            _log.Info($"Link \"{link.RelativePath}\" skipped: it belongs to Addons Linker.");
+            return;
+        }
         var pending = new PendingLink
         {
             Record = link,

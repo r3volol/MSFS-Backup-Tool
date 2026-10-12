@@ -80,6 +80,22 @@ doesn't remove it.
 The tool never follows a link when it copies or deletes, so nothing it does can reach the add-on
 behind a link.
 
+### MSFS Addons Linker
+
+Links made by [MSFS Addons Linker](https://flightsim.to/file/1572/msfs-addons-linker) are left out
+completely. The tool reads the add-ons folder you set in Addons Linker (from its settings in
+`C:\ProgramData\MSFS Addons Linker` and `C:\ProgramData\MSFS Addons Linker 2024`) and skips every
+link that points into it:
+
+- They aren't recorded in the backup, and Move out leaves them in the Community folder.
+- A restore never creates them, even from a backup made with an older version of this tool.
+- The folder list shows how many were skipped, for example `42 items (3 links), 12 Addons Linker skipped`.
+
+After a reinstall, open Addons Linker, check that its Community folder setting points to the new
+install, and turn your add-ons back on there.
+
+If Addons Linker isn't installed, or you never set its add-ons folder, nothing is skipped.
+
 ## What's in a backup
 
 Each backup is a folder named `MSFS Backup <date>`. Your files are inside it in

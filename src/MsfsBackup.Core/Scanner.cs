@@ -9,6 +9,8 @@ public sealed class ScanResult
     /// <summary>Real (non-link) folders, parents before children.</summary>
     public List<string> Directories { get; } = new();
     public List<LinkRecord> Links { get; } = new();
+    /// <summary>Links owned by MSFS Addons Linker. Left out of the backup and never touched.</summary>
+    public List<LinkRecord> IgnoredLinks { get; } = new();
     public long TotalBytes { get; set; }
     /// <summary>File count and bytes per top-level entry.</summary>
     public Dictionary<string, (long Files, long Bytes)> PerEntry { get; } = new(StringComparer.OrdinalIgnoreCase);
@@ -35,6 +37,11 @@ public static class Scanner
         {
             ct.ThrowIfCancellationRequested();
             onItem?.Invoke(entry.Name);
+            if (LinkInspector.TryRead(entry, entry.Name) is { } link && AddonsLinker.Owns(link))
+            {
+                result.IgnoredLinks.Add(link);
+                continue;
+            }
             result.TopLevelEntries.Add(entry.Name);
             result.PerEntry[entry.Name] = (0, 0);
             Walk(entry, entry.Name, entry.Name, result, ct);
@@ -43,18 +50,25 @@ public static class Scanner
     }
 
     /// <summary>Quick count of what a location holds, for display.</summary>
-    public static (int Items, int Links) CountTopLevel(string root, LocationFilter filter)
+    /// <remarks>Addons Linker links are counted separately and not included in Items or Links.</remarks>
+    public static (int Items, int Links, int AddonsLinker) CountTopLevel(string root, LocationFilter filter)
     {
         if (!Directory.Exists(root))
-            return (0, 0);
-        int items = 0, links = 0;
+            return (0, 0, 0);
+        int items = 0, links = 0, linker = 0;
         foreach (var e in TopLevel(root, filter))
         {
+            var link = LinkInspector.TryRead(e, e.Name);
+            if (link != null && AddonsLinker.Owns(link))
+            {
+                linker++;
+                continue;
+            }
             items++;
-            if (e.Attributes.HasFlag(FileAttributes.ReparsePoint) && LinkInspector.TryRead(e, e.Name) != null)
+            if (link != null)
                 links++;
         }
-        return (items, links);
+        return (items, links, linker);
     }
 
     static IEnumerable<FileSystemInfo> TopLevel(string root, LocationFilter filter)
@@ -86,7 +100,7 @@ public static class Scanner
         var link = LinkInspector.TryRead(entry, rel);
         if (link != null)
         {
-            r.Links.Add(link);
+            (AddonsLinker.Owns(link) ? r.IgnoredLinks : r.Links).Add(link);
             return;
         }
 

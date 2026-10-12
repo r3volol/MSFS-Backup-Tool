@@ -60,8 +60,9 @@ public sealed class LocationRow : Bindable
         }
         try
         {
-            var (items, links) = Scanner.CountTopLevel(Location.Path, Location.Filter);
-            Status = items == 0 ? "empty" : links > 0 ? $"{items} items ({links} links)" : $"{items} items";
+            var (items, links, linker) = Scanner.CountTopLevel(Location.Path, Location.Filter);
+            Status = (items == 0 ? "empty" : links > 0 ? $"{items} items ({links} links)" : $"{items} items")
+                + (linker > 0 ? $", {linker} Addons Linker skipped" : "");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or UserFacingException)
         {

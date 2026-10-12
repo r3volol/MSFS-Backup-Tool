@@ -105,8 +105,9 @@ static class Program
             Console.WriteLine($"{inst.DisplayName}   [{inst.ConfigFile}]");
             foreach (var l in inst.Locations)
             {
-                var (items, links) = Scanner.CountTopLevel(l.Path, l.Filter);
-                string state = Directory.Exists(l.Path) ? $"{items} items, {links} links" : "not found";
+                var (items, links, linker) = Scanner.CountTopLevel(l.Path, l.Filter);
+                string state = !Directory.Exists(l.Path) ? "not found"
+                    : $"{items} items, {links} links" + (linker > 0 ? $" (+{linker} Addons Linker, skipped)" : "");
                 Console.WriteLine($"  {l.Id,-36} {state,-22} {l.Path}");
             }
         }

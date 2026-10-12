@@ -52,7 +52,7 @@
                                 <DataGridTextColumn Header="Sim" Binding="{Binding SimName}" Width="80" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Version" Binding="{Binding StoreName}" Width="76" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Folder" Binding="{Binding FolderName}" Width="200" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Contents" Binding="{Binding Status}" Width="150" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Contents" Binding="{Binding Status}" Width="230" IsReadOnly="True"/>
                                 <DataGridTemplateColumn Header="Location" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>

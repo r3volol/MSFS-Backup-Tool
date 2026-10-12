@@ -62,6 +62,8 @@ public sealed class BackupEngine
         {
             var s = Scanner.Scan(l.Path, l.Filter, _ct, _progress.Item);
             _log.Info($"{l.DisplayName}: {s.TopLevelEntries.Count} items, {s.Files.Count:N0} files, {Fmt.Bytes(s.TotalBytes)}, {s.Links.Count} links");
+            if (s.IgnoredLinks.Count > 0)
+                _log.Info($"{l.DisplayName}: {s.IgnoredLinks.Count} Addons Linker link(s) left out (Addons Linker manages these).");
             scans.Add((l, s));
         }
 
@@ -181,11 +183,15 @@ public sealed class BackupEngine
         var topLevelLinks = new HashSet<string>(
             job.Scan.Links.Where(k => !k.RelativePath.Contains('\\')).Select(k => k.RelativePath),
             StringComparer.OrdinalIgnoreCase);
+        // A rename would carry an Addons Linker link along, so those folders go file by file.
+        var holdsLinkerLink = new HashSet<string>(
+            job.Scan.IgnoredLinks.Select(k => PathUtil.TopOf(k.RelativePath)),
+            StringComparer.OrdinalIgnoreCase);
 
         foreach (var entry in job.Scan.TopLevelEntries)
         {
             _ct.ThrowIfCancellationRequested();
-            if (topLevelLinks.Contains(entry))
+            if (topLevelLinks.Contains(entry) || holdsLinkerLink.Contains(entry))
                 continue; // links are recorded in the manifest and removed afterwards
             string src = Path.Combine(job.Location.Path, entry);
             string dst = Path.Combine(job.DataRoot, entry);

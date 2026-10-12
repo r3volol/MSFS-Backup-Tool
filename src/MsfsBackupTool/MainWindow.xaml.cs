@@ -49,6 +49,7 @@ public partial class MainWindow : Window
 
     void Detect()
     {
+        AddonsLinker.Reload();
         _installs = SimLocator.Detect();
         _locations.Clear();
         foreach (var loc in _installs.SelectMany(i => i.Locations))
