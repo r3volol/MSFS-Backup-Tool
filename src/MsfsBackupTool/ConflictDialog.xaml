@@ -1,0 +1,30 @@
+<Window x:Class="MsfsBackupTool.ConflictDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Files already exist" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" FontSize="13" Background="#F5F6F8">
+    <StackPanel Margin="20" MaxWidth="520">
+        <TextBlock x:Name="Message" TextWrapping="Wrap" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <TextBlock TextWrapping="Wrap" Foreground="#5F6B7A" Margin="0,0,0,16"
+                   Text="Your choice applies to everything in this restore."/>
+        <Button Style="{StaticResource PrimaryButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Click="Overwrite_Click">
+            <StackPanel>
+                <TextBlock Text="Overwrite with the backup" FontWeight="SemiBold"/>
+                <TextBlock Text="Backed-up files replace what's there." FontWeight="Normal" Opacity="0.85"/>
+            </StackPanel>
+        </Button>
+        <Button Margin="0,0,0,8" Padding="18,8" HorizontalContentAlignment="Left" Click="Skip_Click">
+            <StackPanel>
+                <TextBlock Text="Skip existing" FontWeight="SemiBold"/>
+                <TextBlock Text="Leave anything already there untouched." Foreground="#5F6B7A"/>
+            </StackPanel>
+        </Button>
+        <Button Margin="0,0,0,16" Padding="18,8" HorizontalContentAlignment="Left" Click="Newer_Click">
+            <StackPanel>
+                <TextBlock Text="Keep the newer file" FontWeight="SemiBold"/>
+                <TextBlock Text="Compare dates file by file and keep whichever is newer." Foreground="#5F6B7A"/>
+            </StackPanel>
+        </Button>
+        <Button Content="Cancel restore" HorizontalAlignment="Right" IsCancel="True"/>
+    </StackPanel>
+</Window>
